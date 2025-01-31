@@ -4,6 +4,9 @@ import lombok.Getter;
 import lombok.ToString;
 import studying.interfaces.IEngine;
 
+/**
+ * Педальный двигатель
+ */
 @ToString
 @Getter
 public class PedalEngine implements IEngine {
