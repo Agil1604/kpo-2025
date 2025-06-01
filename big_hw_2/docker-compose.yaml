@@ -1,0 +1,89 @@
+version: '3.8'
+
+services:
+  # Сервис Api gateway
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      - FILE_STORING_SERVICE_URL=file-storing-service:50051
+      - FILE_ANALYSIS_SERVICE_URL=file-analysis-service:50051
+    networks:
+      - microservices-net
+    depends_on:
+      - file-storing-service
+      - file-analysis-service
+
+  # Сервис File storing
+  file-storing-service:
+    build: ./file-storing-service
+    expose:
+      - "50051" # gRPC порт
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://file-storing-db:5432/files_storage_db
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - GRPC_PORT=50051
+    networks:
+      - microservices-net
+    depends_on:
+      file-storing-db:
+        condition: service_healthy
+
+  file-storing-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: files_storage_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - file-storing-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Сервис File analysis
+  file-analysis-service:
+    build: ./file-analysis-service
+    expose:
+      - "50051" # gRPC порт
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://file-analysis-db:5432/file_analysis_db
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - GRPC_PORT=50051
+    networks:
+      - microservices-net
+    depends_on:
+      file-analysis-db:
+        condition: service_healthy
+
+
+  file-analysis-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: file_analysis_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - file-analysis-db-data:/var/lib/postgresql/data
+    networks:
+      - microservices-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  file-storing-db-data:
+  file-analysis-db-data:
+
+networks:
+  microservices-net:
+    driver: bridge
