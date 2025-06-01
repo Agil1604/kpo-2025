@@ -1,0 +1,51 @@
+syntax = "proto3";
+package file_analysis;
+
+option java_multiple_files = true;
+option java_package = "kpo.grpc.file_analysis";
+option java_outer_classname = "FileAnalysisProto";
+
+service FileAnalysisService {
+    // Анализ файла
+    rpc AnalyzeFile(AnalyzeFileRequest) returns (AnalysisResult);
+
+    // Получение облака слов
+    rpc GetCloud(GetCloudRequest) returns (GetCloudResult);
+
+    // Получение содержимого файла
+    rpc GetFile(GetFileRequest) returns (GetFileResponse);
+}
+
+message AnalyzeFileRequest {
+    int32 file_id = 1;
+}
+
+message AnalysisResult {
+    int32 analysis_id = 1;
+    int32 file_id = 2;
+    TextStats stats = 3;
+}
+
+message TextStats {
+    int32 paragraphs = 1;
+    int32 words = 2;
+    int32 symbols = 3;
+    double plagiarism = 4;
+}
+
+message GetCloudRequest {
+    int32 file_id = 1;
+}
+
+message GetCloudResult {
+    bytes content = 1;
+}
+
+message GetFileRequest {
+    int32 file_id = 1;
+}
+
+message GetFileResponse {
+    string filename = 1;
+    string content = 2;
+}

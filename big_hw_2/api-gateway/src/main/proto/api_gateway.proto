@@ -1,0 +1,59 @@
+syntax = "proto3";
+package api_gateway;
+
+option java_multiple_files = true;
+option java_package = "kpo.grpc.api_gateway";
+option java_outer_classname = "ApiGatewayProto";
+
+service ApiGatewayService {
+    // Загрузка и получение файла
+    rpc UploadFile(UploadFileRequest) returns (UploadFileResponse);
+    rpc GetFile(GetFileRequest) returns (GetFileResponse);
+
+    // Анализ файла и получение облака слов
+    rpc AnalyzeFile(AnalyzeFileRequest) returns (AnalysisResult);
+    rpc GetCloud(GetCloudRequest) returns (GetCloudResult);
+}
+
+message UploadFileRequest {
+    string filename = 1;
+    string content = 2;
+}
+
+message UploadFileResponse {
+    int32 file_id = 1;
+}
+
+message GetFileRequest {
+    int32 file_id = 1;
+}
+
+message GetFileResponse {
+    string filename = 1;
+    string content = 2;
+}
+
+message AnalyzeFileRequest {
+    int32 file_id = 1;
+}
+
+message AnalysisResult {
+    int32 analysis_id = 1;
+    int32 file_id = 2;
+    TextStats stats = 3;
+}
+
+message TextStats {
+    int32 paragraphs = 1;
+    int32 words = 2;
+    int32 symbols = 3;
+    double plagiarism = 4;
+}
+
+message GetCloudRequest {
+    int32 file_id = 1;
+}
+
+message GetCloudResult {
+    bytes content = 1;
+}
