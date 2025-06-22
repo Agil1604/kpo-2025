@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      routes:
+        - id: order-service
+          uri: http://orders-service:8080
+          predicates:
+            - Path=/api/order/**
+        - id: payments-service
+          uri: http://payments-service:8080
+          predicates:
+            - Path=/api/payment/**
+        - id: order-api-docs
+          uri: http://orders-service:8080
+          predicates:
+            - Path=/v3/api-docs/orders
+          filters:
+            - RewritePath=/v3/api-docs/orders, /v3/api-docs
+        - id: payments-api-docs
+          uri: http://payments-service:8080
+          predicates:
+            - Path=/v3/api-docs/payments
+          filters:
+            - RewritePath=/v3/api-docs/payments, /v3/api-docs
+
+server:
+  port: 8080
