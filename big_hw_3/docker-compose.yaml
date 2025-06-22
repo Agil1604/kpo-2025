@@ -7,6 +7,10 @@ services:
       - microservices-net
     ports:
       - "8081:80"
+    depends_on:
+      api-gateway:
+        condition: service_started
+
   # Сервис Api gateway
   api-gateway:
     build: ./API-Gateway

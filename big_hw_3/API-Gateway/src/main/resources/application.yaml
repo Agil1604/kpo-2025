@@ -24,6 +24,20 @@ spring:
             - Path=/v3/api-docs/payments
           filters:
             - RewritePath=/v3/api-docs/payments, /v3/api-docs
+      globalcors:
+        cors-configurations:
+          '[/**]':
+            allowed-origins: "http://localhost:8081"
+            allowed-methods:
+              - GET
+              - POST
+              - PATCH
+              - PUT
+              - DELETE
+              - OPTIONS
+            allowed-headers: "*"
+            allow-credentials: true
+            max-age: 3600
 
 server:
   port: 8080
